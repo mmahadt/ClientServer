@@ -46,7 +46,6 @@ namespace ClientApplication
         {
             Console.WriteLine("___________New Message____________");
             Console.WriteLine("Sender ID:\t{0}", message.SenderClientID);
-            //Console.WriteLine("Receiver ID:\t{0}", message.ReceiverClientID);
             Console.WriteLine("Message:\t{0}", message.MessageBody);
             Console.WriteLine("Broadcast:\t{0}", message.Broadcast);
             Console.WriteLine("______________________________________");
@@ -75,7 +74,7 @@ namespace ClientApplication
 
             clientApplication.client.Start(port);
 
-            Console.WriteLine("Client application Id" + clientApplication.client.Id);
+            Console.WriteLine("Client application Id " + clientApplication.client.Id);
 
             Thread messagePrinterThread = new Thread(() => InboxPrinter(clientApplication.client.Inbox));
             messagePrinterThread.Start();

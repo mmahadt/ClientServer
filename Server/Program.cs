@@ -19,7 +19,7 @@ namespace ServerApp
 
     {
         //A list of strings to contain client Ids
-        public static List<handleClinet> listOfClients = new List<handleClinet>();
+        public static List<HandleClinet> listOfClients = new List<HandleClinet>();
         public static List<string> clientsList = new List<string>();
         public static Queue<Message> Outbox = new Queue<Message>();
 
@@ -69,24 +69,24 @@ namespace ServerApp
 
         public static void Unicast(Message msg, string receiverId)
         {
-            foreach (handleClinet client in listOfClients)
+            foreach (HandleClinet client in listOfClients)
             {
                 if (client.clNo == receiverId && ClList.Contains(client.clNo))
                 //send message to intended recipient only
                 {
-                    handleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
+                    HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
                 }
             }
         }
 
         public static void Broadcast(Message msg, string senderId)
         {
-            foreach (handleClinet client in listOfClients)
+            foreach (HandleClinet client in listOfClients)
             {
-                if (client.clNo != senderId && ClList.Contains(client.clNo)) //send the message to all 
-                                                                             //clients except the sender
+                if (client.clNo != senderId && ClList.Contains(client.clNo)) 
+                    //send the message to all clients except the sender
                 {
-                    handleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
+                    HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
                 }
             }
         }
@@ -120,11 +120,11 @@ namespace ServerApp
                     clientSocket = serverSocket.AcceptTcpClient();
                     Console.WriteLine(" >> " + "Client No:" + Convert.ToString(counter) + " connected");
 
-                    handleClinet client = new handleClinet();
+                    HandleClinet client = new HandleClinet();
                     //Make a list of clients
                     listOfClients.Add(client);
                     clientsList.Add(Convert.ToString(counter));
-                    client.startClient(clientSocket, Convert.ToString(counter));
+                    client.StartClient(clientSocket, Convert.ToString(counter));
 
                 }
                 catch (Exception ex)
@@ -190,11 +190,11 @@ namespace ServerApp
 
     }
     //Class to handle each client request separatly
-    public class handleClinet
+    public class HandleClinet
     {
         public TcpClient clientSocket;
         public string clNo;
-        public void startClient(TcpClient inClientSocket, string clineNo)
+        public void StartClient(TcpClient inClientSocket, string clineNo)
         {
             this.clientSocket = inClientSocket;
             this.clNo = clineNo;
@@ -218,19 +218,16 @@ namespace ServerApp
             };
             SendOverNetworkStream(m2, clientSocket.GetStream());
             Program.ClList.Add(clNo);
-            Thread ctThread = new Thread(doChat);
+            Thread ctThread = new Thread(DoChat);
             ctThread.Start();
         }
 
-        private void doChat()
+        private void DoChat()
         {
             int requestCount = 0;
-            //byte[] bytesFrom = new byte[10025];
+            
             Message dataFromClient = null;
-            //Byte[] sendBytes = null;
-            //string serverResponse = null;
-            //string rCount = null;
-            //requestCount = 0;
+            
 
             while ((true))
             {
@@ -323,10 +320,8 @@ namespace ServerApp
             byte[] inStream = new byte[msgLength1];
             //read that number of bytes from the server stream
             networkStream.Read(inStream, 0, msgLength1);
-            //convert the byte array to message string
-            //string dataFromServer = Encoding.ASCII.GetString(inStream);
-
-            //Console.WriteLine(dataFromServer);
+           
+            //convert the byte array to message object
             Message dataFromServer = (Message)ByteArrayToObject(inStream);
             return dataFromServer;
         }

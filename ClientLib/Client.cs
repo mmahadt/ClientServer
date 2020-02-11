@@ -13,33 +13,18 @@ namespace ClientLib
 {
     public class Client
     {
-        //id is set for the first time and then becomes read only
-        //private string _id = "";  // Backing store (Real id)
+        
         public string Id;
-        //{
-        //    get => _id;
-        //    set
-        //    {
-        //        if (value == "")
-        //        {
-        //            _id = value;
-        //        }
-        //    }
-        //}
 
         TcpClient clientSocket;
         NetworkStream serverStream;
         public Queue<Message> Inbox = new Queue<Message>();
-        //public List<string> listOfOtherClients;
         public string listOfOtherClients;
         public void Start(int port)
         {
 
             try
             {
-                //Read the port number from app.config file
-                //int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
-
                 clientSocket = new TcpClient();
 
                 clientSocket.Connect(IPAddress.Loopback, port);

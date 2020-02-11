@@ -14,7 +14,6 @@ namespace Server
 {
     partial class HybridSvxService : ServiceBase
     {
-        //private static Timer aTimer;
 
         public HybridSvxService()
         {
@@ -23,16 +22,12 @@ namespace Server
 
         protected override void OnStart(string[] args)
         {
-            //aTimer = new Timer(10000); // 10 Seconds
-            //aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            //aTimer.Enabled = true;
-
-            System.Threading.Thread workerThread = new System.Threading.Thread(longprocess);
+            System.Threading.Thread workerThread = new System.Threading.Thread(Longprocess);
             workerThread.Start();
             
         }
        
-        private void longprocess()
+        private void Longprocess()
         {
             Program Server = new Program();
             Server.StartServer();
@@ -40,7 +35,7 @@ namespace Server
 
         protected override void OnStop()
         {
-            //aTimer.Stop();
+
         }
 
     }
