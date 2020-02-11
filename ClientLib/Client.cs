@@ -18,8 +18,14 @@ namespace ClientLib
 
         TcpClient clientSocket;
         NetworkStream serverStream;
-        public Queue<Message> Inbox = new Queue<Message>();
+        private Queue<Message> Inbox = new Queue<Message>();
         public string listOfOtherClients;
+
+        public Queue<Message> GetInbox()
+        {
+            return Inbox;
+        }
+
         public void Start(int port)
         {
 

@@ -76,7 +76,7 @@ namespace ClientApplication
 
             Console.WriteLine("Client application Id " + clientApplication.client.Id);
 
-            Thread messagePrinterThread = new Thread(() => InboxPrinter(clientApplication.client.Inbox));
+            Thread messagePrinterThread = new Thread(() => InboxPrinter(clientApplication.client.GetInbox()));
             messagePrinterThread.Start();
 
             while (true)
