@@ -42,7 +42,7 @@ namespace ClientApplication
             }
         }
 
-        static void MessagePrinter(Message message)
+        public void MessagePrinter(Message message)
         {
             Console.WriteLine("___________New Message____________");
             Console.WriteLine("Sender ID:\t{0}", message.SenderClientID);
@@ -51,7 +51,7 @@ namespace ClientApplication
             Console.WriteLine("______________________________________");
         }
 
-        static void InboxPrinter(Queue<Message> Inbox)
+        public void InboxPrinter(Queue<Message> Inbox)
         {
             while (true)
             {
@@ -76,7 +76,7 @@ namespace ClientApplication
 
             Console.WriteLine("Client application Id " + clientApplication.client.Id);
 
-            Thread messagePrinterThread = new Thread(() => InboxPrinter(clientApplication.client.GetInbox()));
+            Thread messagePrinterThread = new Thread(() => clientApplication.InboxPrinter(clientApplication.client.GetInbox()));
             messagePrinterThread.Start();
 
             while (true)
