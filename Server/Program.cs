@@ -69,14 +69,8 @@ namespace ServerApp
 
         public static void Unicast(Message msg, string receiverId)
         {
-            foreach (HandleClinet client in listOfClients)
-            {
-                if (client.clNo == receiverId && ClList.Contains(client.clNo))
-                //send message to intended recipient only
-                {
-                    HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
-                }
-            }
+            HandleClinet client = listOfClients.Find(x => x.clNo == receiverId);
+            HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
         }
 
         public static void Broadcast(Message msg, string senderId)
