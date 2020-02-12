@@ -54,9 +54,9 @@ namespace ClientLib
             {
                 return;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(" >> " + ex.ToString());
+                return;
             }
 
         }
@@ -70,6 +70,7 @@ namespace ClientLib
                     if (dataFromServer.SenderClientID == "Server")
                     {
                         listOfOtherClients = dataFromServer.MessageBody;
+                        Inbox.Enqueue(dataFromServer);
                     }
                     else
                     {

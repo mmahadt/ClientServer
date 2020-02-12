@@ -29,7 +29,7 @@ namespace ClientApplication
                 do
                 {
                     Console.WriteLine("Input Receiver ID");
-                    Console.WriteLine("Valid receiver vals are {0}", client.listOfOtherClients);
+                    Console.WriteLine("Valid receiver vals are {0}", client.listOfOtherClients.Replace("_",", "));
                     receiver = Console.ReadLine();
                     words = client.listOfOtherClients.Split('_');
                 } while (!Array.Exists(words, x => x == receiver));
@@ -44,11 +44,18 @@ namespace ClientApplication
 
         public void MessagePrinter(Message message)
         {
-            Console.WriteLine("___________New Message____________");
-            Console.WriteLine("Sender ID:\t{0}", message.SenderClientID);
-            Console.WriteLine("Message:\t{0}", message.MessageBody);
-            Console.WriteLine("Broadcast:\t{0}", message.Broadcast);
-            Console.WriteLine("______________________________________");
+            if (message.SenderClientID == "Server")
+            {
+                Console.WriteLine("\n>>>Updated list of clients {0}", client.listOfOtherClients.Replace("_", ", "));
+            }
+            else
+            {
+                Console.WriteLine("___________New Message____________");
+                Console.WriteLine("Sender ID:\t{0}", message.SenderClientID);
+                Console.WriteLine("Message:\t{0}", message.MessageBody);
+                Console.WriteLine("Broadcast:\t{0}", message.Broadcast);
+                Console.WriteLine("______________________________________");
+            }          
         }
 
         public void InboxPrinter(Queue<Message> Inbox)
