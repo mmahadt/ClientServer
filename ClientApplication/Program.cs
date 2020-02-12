@@ -11,7 +11,7 @@ namespace ClientApplication
     public class ClientApplication
     {
         Client client = new Client();
-
+        static bool getInputFromUser;
         public Message GetInputFromUser()
         {
             Console.WriteLine("\n\n\nIs it Broadcast? Type (yes or no)");
@@ -44,6 +44,7 @@ namespace ClientApplication
 
         public void MessagePrinter(Message message)
         {
+            
             if (message.SenderClientID == "Server")
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -66,17 +67,28 @@ namespace ClientApplication
             {
                 if (Inbox.Count != 0)
                 {
-
-                    MessagePrinter(Inbox.Dequeue());
-
+                    if (Inbox.Peek() == null)
+                    {
+                        Console.WriteLine("Server Down.");
+                        getInputFromUser = false;
+                        return;
+                    }
+                    else
+                    {
+                        MessagePrinter(Inbox.Dequeue());
+                    }
+   
                 }
+                
             }
-
+            
         }
 
         static void Main(string[] args)
         {
+
             ClientApplication clientApplication = new ClientApplication();
+            getInputFromUser = true;
 
             //Read the port number from app.config file
             int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
@@ -88,10 +100,10 @@ namespace ClientApplication
             Thread messagePrinterThread = new Thread(() => clientApplication.InboxPrinter(clientApplication.client.GetInbox()));
             messagePrinterThread.Start();
 
-            while (true)
+            while (getInputFromUser)
             {
                 Message m1 = clientApplication.GetInputFromUser();
-                if (m1.Broadcast)
+                if (m1.Broadcast && getInputFromUser)
                 {
                     clientApplication.client.Broadcast(m1);
                 }
@@ -99,7 +111,10 @@ namespace ClientApplication
                 {
                     clientApplication.client.Unicast(m1);
                 }
-            }
+            } 
+
+            Console.WriteLine("Press any key to exit.");
+            Console.Read();
         }
 
     }

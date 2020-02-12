@@ -64,23 +64,24 @@ namespace ClientLib
         {
             while (true)
             {
-                try
+
+                Message dataFromServer = ReceiveFromServerStream();
+                if(dataFromServer == null)
                 {
-                    Message dataFromServer = ReceiveFromServerStream();
-                    if (dataFromServer.SenderClientID == "Server")
-                    {
-                        listOfOtherClients = dataFromServer.MessageBody;
-                        Inbox.Enqueue(dataFromServer);
-                    }
-                    else
-                    {
-                        Inbox.Enqueue(dataFromServer);
-                    }
+                    Inbox.Enqueue(dataFromServer);
+                    break;
                 }
-                catch (Exception)
+                else
+                if (dataFromServer.SenderClientID == "Server")
                 {
-                    return;
+                    listOfOtherClients = dataFromServer.MessageBody;
+                    Inbox.Enqueue(dataFromServer);
                 }
+                else
+                {
+                    Inbox.Enqueue(dataFromServer);
+                }
+
             }
         }
         public Message StringsToMessageObject(string receiver, string message, bool broadcast)
@@ -163,19 +164,27 @@ namespace ClientLib
         //https://stackoverflow.com/questions/7099875/sending-messages-and-files-over-networkstream
         private Message ReceiveFromServerStream()
         {
-            //Read the length of incoming message from the server stream
-            byte[] msgLengthBytes1 = new byte[sizeof(int)];
-            serverStream.Read(msgLengthBytes1, 0, msgLengthBytes1.Length);
-            //store the length of message as an integer
-            int msgLength1 = BitConverter.ToInt32(msgLengthBytes1, 0);
+            try
+            {
+                //Read the length of incoming message from the server stream
+                byte[] msgLengthBytes1 = new byte[sizeof(int)];
+                serverStream.Read(msgLengthBytes1, 0, msgLengthBytes1.Length);
+                //store the length of message as an integer
+                int msgLength1 = BitConverter.ToInt32(msgLengthBytes1, 0);
 
-            //create a buffer for incoming data of size equal to length of message
-            byte[] inStream = new byte[msgLength1];
-            //read that number of bytes from the server stream
-            serverStream.Read(inStream, 0, msgLength1);
-            //convert the byte array to message object
-            Message dataFromServer = (Message)ByteArrayToObject(inStream);
-            return dataFromServer;
+                //create a buffer for incoming data of size equal to length of message
+                byte[] inStream = new byte[msgLength1];
+                //read that number of bytes from the server stream
+                serverStream.Read(inStream, 0, msgLength1);
+                //convert the byte array to message object
+                Message dataFromServer = (Message)ByteArrayToObject(inStream);
+                return dataFromServer;
+            }
+            catch(IOException)
+            {
+                return null;
+            }
+            
         }
 
         public void SendToServerStream(Message dataFromClient)
