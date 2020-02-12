@@ -46,7 +46,9 @@ namespace ClientApplication
         {
             if (message.SenderClientID == "Server")
             {
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("\n>>>Updated list of clients {0}", client.listOfOtherClients.Replace("_", ", "));
+                Console.ResetColor();
             }
             else
             {
