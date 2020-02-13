@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HandleClinet.cs" />
     <Compile Include="HybridSvxService.cs">
       <SubType>Component</SubType>
     </Compile>
