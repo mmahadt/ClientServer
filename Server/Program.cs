@@ -43,15 +43,15 @@ namespace ServerApp
             };
             Broadcast(m2, m2.SenderClientID);
         }
-        
 
-        public static void Unicast(Message msg, string receiverId)
+
+        private static void Unicast(Message msg, string receiverId)
         {
             HandleClinet client = clientMapping[receiverId];
             HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
         }
 
-        public static void Broadcast(Message msg, string senderId)
+        private static void Broadcast(Message msg, string senderId)
         {
             foreach (HandleClinet client in listOfClients)
             {

@@ -35,12 +35,9 @@ namespace ClientApplication
                     Message m1 = clientApplication.GetInputFromUser();
                     if (m1.Broadcast && getInputFromUser)
                     {
-                        clientApplication.client.Broadcast(m1);
+                        clientApplication.client.SendToServerStream(m1);
                     }
-                    else
-                    {
-                        clientApplication.client.Unicast(m1);
-                    }
+                    
                 }              
             }
             catch (System.FormatException)

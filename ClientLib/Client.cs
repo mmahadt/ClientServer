@@ -122,32 +122,32 @@ namespace ClientLib
             }
         }
 
-        public bool Broadcast(Message message)
-        {
-            try
-            {
-                SendToServerStream(message);
-                return true;//success
-            }
-            catch (Exception ex)
-            {
-                return false;//failure
-            }
-        }
+        //public bool Broadcast(Message message)
+        //{
+        //    try
+        //    {
+        //        SendToServerStream(message);
+        //        return true;//success
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;//failure
+        //    }
+        //}
 
-        public bool Unicast(Message message)
-        {
-            try
-            {
-                SendToServerStream(message);
-                return true;//success
-            }
-            catch
-            {
-                return false;//failure
-            }
+        //public bool Unicast(Message message)
+        //{
+        //    try
+        //    {
+        //        SendToServerStream(message);
+        //        return true;//success
+        //    }
+        //    catch
+        //    {
+        //        return false;//failure
+        //    }
 
-        }
+        //}
 
         //https://stackoverflow.com/questions/7099875/sending-messages-and-files-over-networkstream
         private Message ReceiveFromServerStream()
