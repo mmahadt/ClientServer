@@ -21,7 +21,6 @@ namespace ServerApp
         //A list of strings to contain client Ids
         public static List<HandleClinet> listOfClients = new List<HandleClinet>();
         public static List<string> clientsList = new List<string>();
-        public static Queue<Message> Outbox = new Queue<Message>();
 
         public static ObservableCollection<string> ClList { get; set; }
 
@@ -44,28 +43,7 @@ namespace ServerApp
             };
             Broadcast(m2, m2.SenderClientID);
         }
-        private static void MessageSender()
-        {
-            while (true)
-            {
-                if (Outbox.Count != 0)
-                {
-                    Message message = Outbox.Peek();
-                    if (message.Broadcast)
-                    {
-                        Console.WriteLine(">> Broadcast message from client\t" + message.MessageBody);
-                        Broadcast(message, message.SenderClientID);
-                        Outbox.Dequeue();
-                    }
-                    else
-                    {
-                        Console.WriteLine(">> Unicast message from client\t" + message.MessageBody);
-                        Unicast(message, message.ReceiverClientID);
-                        Outbox.Dequeue();
-                    }
-                }
-            }
-        }
+        
 
         public static void Unicast(Message msg, string receiverId)
         {
@@ -103,9 +81,7 @@ namespace ServerApp
 
             counter = 0;
 
-            Thread senderThread = new Thread(MessageSender);
-            senderThread.Start();
-
+            
             while (true)
             {
                 try
@@ -234,7 +210,24 @@ namespace ServerApp
                         if (networkStream.CanRead)
                         {
                             dataFromClient = ReadFromNetworkStream(networkStream);
-                            Program.Outbox.Enqueue(dataFromClient);
+                            
+                            try
+                            {
+                                if (dataFromClient.Broadcast)
+                                {
+                                    Program.Broadcast(dataFromClient, dataFromClient.SenderClientID);
+                                }
+                                else
+                                {
+                                    Program.Unicast(dataFromClient, dataFromClient.ReceiverClientID);
+                                }
+                            }
+                            catch (Exception)
+                            {
+
+                                continue;
+                            }
+
                         }
                         else
                         {

@@ -26,13 +26,9 @@ namespace ClientLib
 
         TcpClient clientSocket;
         NetworkStream serverStream;
-        //private Queue<Message> Inbox = new Queue<Message>();
         public string listOfOtherClients;
 
-        //public Queue<Message> GetInbox()
-        //{
-        //    return Inbox;
-        //}
+        
 
         public void Initialize(int port)
         {
@@ -59,7 +55,7 @@ namespace ClientLib
                 Message dataFromServer = ReceiveFromServerStream();
                 if(dataFromServer == null)
                 {
-                    //Inbox.Enqueue(dataFromServer);
+
                     break;
                 }
                 else
@@ -67,7 +63,7 @@ namespace ClientLib
                 {
                     listOfOtherClients = dataFromServer.MessageBody;
                     clientListEvent.Invoke(listOfOtherClients);
-                    //Inbox.Enqueue(dataFromServer);
+
                 }
                 else
                 {

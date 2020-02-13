@@ -21,34 +21,41 @@ namespace ClientApplication
             clientApplication.client.newMessage += new_message;//subscribe to client newMessage event
             clientApplication.client.serverDown += server_down;//subscribe to serverdown event
             clientApplication.client.clientListEvent += client_list_update;//subscribe to client list change event
-
-            //Read the port number from app.config file
-            int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
-
-          
-                clientApplication.client.Initialize(port);
-        
-
-            Console.WriteLine("Client application Id " + clientApplication.client.Id);
-
-            //Thread messagePrinterThread = new Thread(() => clientApplication.InboxPrinter(clientApplication.client.GetInbox()));
-            //messagePrinterThread.Start();
-
-            while (getInputFromUser)
+            
+            try
             {
-                Message m1 = clientApplication.GetInputFromUser();
-                if (m1.Broadcast && getInputFromUser)
-                {
-                    clientApplication.client.Broadcast(m1);
-                }
-                else
-                {
-                    clientApplication.client.Unicast(m1);
-                }
-            }
+                //Read the port number from app.config file
+                int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
+                clientApplication.client.Initialize(port);
 
-            Console.WriteLine("Press any key to exit.");
-            Console.Read();
+                Console.WriteLine("Client application Id " + clientApplication.client.Id);
+
+                while (getInputFromUser)
+                {
+                    Message m1 = clientApplication.GetInputFromUser();
+                    if (m1.Broadcast && getInputFromUser)
+                    {
+                        clientApplication.client.Broadcast(m1);
+                    }
+                    else
+                    {
+                        clientApplication.client.Unicast(m1);
+                    }
+                }              
+            }
+            catch (System.FormatException)
+            {
+                Console.WriteLine("Please input a valid port number in App.config file.");
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Console.WriteLine("Server is not connected.");
+            }
+            finally
+            {
+                Console.WriteLine("Press any key to exit.");
+                Console.Read();
+            }
         }
 
         private static void new_message(string senderId, string message)
@@ -98,47 +105,7 @@ namespace ClientApplication
             }
         }
 
-        //public void MessagePrinter(Message message)
-        //{
-            
-        //    if (message.SenderClientID == "Server")
-        //    {
-        //        //Console.ForegroundColor = ConsoleColor.Cyan;
-        //        //Console.WriteLine("\n>>>Updated list of clients {0}", client.listOfOtherClients.Replace("_", ", "));
-        //        //Console.ResetColor();
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("___________New Message____________");
-        //        Console.WriteLine("Sender ID:\t{0}", message.SenderClientID);
-        //        Console.WriteLine("Message:\t{0}", message.MessageBody);
-        //        Console.WriteLine("Broadcast:\t{0}", message.Broadcast);
-        //        Console.WriteLine("______________________________________");
-        //    }          
-        //}
-
-        //public void InboxPrinter(Queue<Message> Inbox)
-        //{
-        //    while (true)
-        //    {
-        //        if (Inbox.Count != 0)
-        //        {
-        //            if (Inbox.Peek() == null)
-        //            {
-        //                Console.WriteLine("Server Down.");
-        //                getInputFromUser = false;
-        //                return;
-        //            }
-        //            else
-        //            {
-        //                MessagePrinter(Inbox.Dequeue());
-        //            }
-   
-        //        }
-                
-        //    }
-            
-        //}
+        
 
         
 
