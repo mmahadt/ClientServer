@@ -11,54 +11,45 @@ using System.Threading;
 
 namespace ClientLib
 {
+    public delegate void OnMessageRecived(string senderId,string message);
+    public delegate void OnServerDown();
+    public delegate void OnUpdateClientList(string updatedListOfClients);
+
     public class Client
     {
-        
+
+        public  event OnMessageRecived newMessage;
+        public event OnServerDown serverDown;
+        public event OnUpdateClientList clientListEvent;
+
         public string Id;
 
         TcpClient clientSocket;
         NetworkStream serverStream;
-        private Queue<Message> Inbox = new Queue<Message>();
+        //private Queue<Message> Inbox = new Queue<Message>();
         public string listOfOtherClients;
 
-        public Queue<Message> GetInbox()
+        //public Queue<Message> GetInbox()
+        //{
+        //    return Inbox;
+        //}
+
+        public void Initialize(int port)
         {
-            return Inbox;
-        }
 
-        public void Start(int port)
-        {
+            clientSocket = new TcpClient();
 
-            try
-            {
-                clientSocket = new TcpClient();
+            clientSocket.Connect(IPAddress.Loopback, port);
 
-                clientSocket.Connect(IPAddress.Loopback, port);
+            serverStream = clientSocket.GetStream();
+            Message m1 = ReceiveFromServerStream();
+            Message m2 = ReceiveFromServerStream();
+            listOfOtherClients = m2.MessageBody;
 
-                serverStream = clientSocket.GetStream();
-                Message m1 = ReceiveFromServerStream();
-                Message m2 = ReceiveFromServerStream();
-                listOfOtherClients = m2.MessageBody;
+            Id = m1.MessageBody;
 
-                Id = m1.MessageBody;
-
-                Thread receiverThread = new Thread(() => ReceiverThreadFunction(serverStream));
-                receiverThread.Start();
-
-            }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
-            catch (System.IO.IOException)
-            {
-                return;
-            }
-            catch (Exception)
-            {
-                return;
-            }
-
+            Thread receiverThread = new Thread(() => ReceiverThreadFunction(serverStream));
+            receiverThread.Start();
         }
         private void ReceiverThreadFunction(NetworkStream stream)
         {
@@ -68,18 +59,19 @@ namespace ClientLib
                 Message dataFromServer = ReceiveFromServerStream();
                 if(dataFromServer == null)
                 {
-                    Inbox.Enqueue(dataFromServer);
+                    //Inbox.Enqueue(dataFromServer);
                     break;
                 }
                 else
                 if (dataFromServer.SenderClientID == "Server")
                 {
                     listOfOtherClients = dataFromServer.MessageBody;
-                    Inbox.Enqueue(dataFromServer);
+                    clientListEvent.Invoke(listOfOtherClients);
+                    //Inbox.Enqueue(dataFromServer);
                 }
                 else
                 {
-                    Inbox.Enqueue(dataFromServer);
+                    newMessage.Invoke(dataFromServer.SenderClientID, dataFromServer.MessageBody);
                 }
 
             }
@@ -182,6 +174,7 @@ namespace ClientLib
             }
             catch(IOException)
             {
+                serverDown.Invoke();
                 return null;
             }
             
