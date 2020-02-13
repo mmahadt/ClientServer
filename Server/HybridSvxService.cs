@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Server
+namespace ServerService
 {
     partial class HybridSvxService : ServiceBase
     {
@@ -29,7 +29,7 @@ namespace Server
        
         private void Longprocess()
         {
-            Program Server = new Program();
+            Server Server = new Server();
             Server.StartServer();
         }
 

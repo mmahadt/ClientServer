@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Configuration.Install;
 using System.ServiceProcess;
 
-namespace Server
+namespace ServerService
 {
     [RunInstaller(true)]
     public class HybridSvxServiceInstaller : Installer
@@ -22,10 +22,10 @@ namespace Server
             serviceProcessInstaller.Username = null;
             serviceProcessInstaller.Password = null;
 
-            serviceInstaller.ServiceName = "HybridSvx";
-            serviceInstaller.DisplayName = "HybridSvx Service";
+            serviceInstaller.ServiceName = "ServerForChatApplication";
+            serviceInstaller.DisplayName = "ServerForChatApplication Service";
             serviceInstaller.StartType = ServiceStartMode.Automatic;
-            serviceInstaller.Description = "My custom hybrid service";
+            serviceInstaller.Description = "My server service for chat application";
 
             this.Installers.Add(serviceProcessInstaller);
             this.Installers.Add(serviceInstaller);

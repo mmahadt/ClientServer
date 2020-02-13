@@ -8,11 +8,11 @@ using ClientLib;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ServiceProcess;
-using Server;
+using ServerService;
 
 namespace ServerApp
 {
-    public class Program
+    public class Server
 
     {
         public static List<HandleClinet> listOfClients = new List<HandleClinet>();
@@ -32,7 +32,7 @@ namespace ServerApp
         private static void OnListChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             // react to list changed
-            string clientListString = string.Join("_", Program.ClList);
+            string clientListString = string.Join("_", Server.ClList);
 
             Message m2 = new Message()
             {
@@ -68,7 +68,7 @@ namespace ServerApp
             try
             {
                 ClList = new ObservableCollection<string>();
-                ClList.CollectionChanged += Program.OnListChanged;
+                ClList.CollectionChanged += Server.OnListChanged;
 
                 //Read the port number from app.config file
                 int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
@@ -126,7 +126,7 @@ namespace ServerApp
         {
             if ((!Environment.UserInteractive))
             {
-                Program.RunAsAService();
+                Server.RunAsAService();
             }
             else
             {
@@ -150,14 +150,14 @@ namespace ServerApp
                 }
                 else
                 {
-                    Program.RunAsAConsole();
+                    Server.RunAsAConsole();
                 }
             }
         }
 
         static void RunAsAConsole()
         {
-            Program Server = new Program();
+            Server Server = new Server();
             Server.StartServer();
         }
 

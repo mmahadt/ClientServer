@@ -1,4 +1,4 @@
-﻿namespace Server
+﻿namespace ServerService
 {
     partial class HybridSvxService
     {

@@ -25,7 +25,7 @@ namespace ServerApp
             };
             SendOverNetworkStream(m1, clientSocket.GetStream());
 
-            Program.ClList.Add(clNo);
+            Server.ClList.Add(clNo);
             Thread ctThread = new Thread(DoChat);
             ctThread.Start();
         }
@@ -53,11 +53,11 @@ namespace ServerApp
                             {
                                 if (dataFromClient.Broadcast)
                                 {
-                                    Program.Broadcast(dataFromClient, dataFromClient.SenderClientID);
+                                    Server.Broadcast(dataFromClient, dataFromClient.SenderClientID);
                                 }
                                 else
                                 {
-                                    Program.Unicast(dataFromClient, dataFromClient.ReceiverClientID);
+                                    Server.Unicast(dataFromClient, dataFromClient.ReceiverClientID);
                                 }
                             }
                             catch (Exception)
@@ -81,7 +81,7 @@ namespace ServerApp
                 }
                 catch (System.IO.IOException)
                 {
-                    Program.ClList.Remove(clNo);
+                    Server.ClList.Remove(clNo);
                     Console.WriteLine("Client {0} disconnected.", clNo);
                     return;
                 }

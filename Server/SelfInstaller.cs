@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Configuration.Install;
 using System.Reflection;
 
-namespace Server
+namespace ServerService
 {
     public class SelfInstaller
     {
