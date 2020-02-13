@@ -45,13 +45,13 @@ namespace ServerApp
         }
 
 
-        private static void Unicast(Message msg, string receiverId)
+        public static void Unicast(Message msg, string receiverId)
         {
             HandleClinet client = clientMapping[receiverId];
             HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
         }
 
-        private static void Broadcast(Message msg, string senderId)
+        public static void Broadcast(Message msg, string senderId)
         {
             foreach (HandleClinet client in listOfClients)
             {
@@ -65,49 +65,61 @@ namespace ServerApp
 
         public void StartServer()
         {
-            ClList = new ObservableCollection<string>();
-            ClList.CollectionChanged += Program.OnListChanged;
-
-            //Read the port number from app.config file
-            int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
-
-            TcpListener serverSocket = new TcpListener(IPAddress.Loopback, port);
-
-            TcpClient clientSocket = default(TcpClient);
-            int counter = 0;
-
-            serverSocket.Start();
-            Console.WriteLine(" >> " + "Server Started");
-
-            counter = 0;
-
-            
-            while (true)
+            try
             {
-                try
-                {
-                    counter += 1;
-                    clientSocket = serverSocket.AcceptTcpClient();
-                    Console.WriteLine(" >> " + "Client No:" + Convert.ToString(counter) + " connected");
+                ClList = new ObservableCollection<string>();
+                ClList.CollectionChanged += Program.OnListChanged;
 
-                    HandleClinet client = new HandleClinet();
-                    //Make a list of clients
-                    listOfClients.Add(client);
-                    clientMapping.Add(Convert.ToString(counter), client);
-                    client.StartClient(clientSocket, Convert.ToString(counter));
+                //Read the port number from app.config file
+                int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
 
-                }
-                catch (Exception ex)
+                TcpListener serverSocket = new TcpListener(IPAddress.Loopback, port);
+
+                TcpClient clientSocket = default(TcpClient);
+                int counter = 0;
+
+                serverSocket.Start();
+                Console.WriteLine(" >> " + "Server Started");
+
+                counter = 0;
+
+
+                while (true)
                 {
-                    Console.WriteLine(" >> " + ex.ToString());
-                    break;
+                    try
+                    {
+                        counter += 1;
+                        clientSocket = serverSocket.AcceptTcpClient();
+                        Console.WriteLine(" >> " + "Client No:" + Convert.ToString(counter) + " connected");
+
+                        HandleClinet client = new HandleClinet();
+                        //Make a list of clients
+                        listOfClients.Add(client);
+                        clientMapping.Add(Convert.ToString(counter), client);
+                        client.StartClient(clientSocket, Convert.ToString(counter));
+
+                    }
+                    catch (Exception)
+                    {
+                        //Console.WriteLine(" >> " + ex.ToString());
+                        break;
+                    }
                 }
+
+                clientSocket.Close();
+                serverSocket.Stop();
+                Console.WriteLine(" >> " + "exit");
+                Console.ReadLine();
             }
-
-            clientSocket.Close();
-            serverSocket.Stop();
-            Console.WriteLine(" >> " + "exit");
-            Console.ReadLine();
+            catch (System.FormatException)
+            {
+                Console.WriteLine("Please input a valid port number in App.config file.");
+            }
+            finally
+            {
+                Console.WriteLine("Press any key to exit.");
+                Console.Read();
+            }
         }
 
         static void Main(string[] args)

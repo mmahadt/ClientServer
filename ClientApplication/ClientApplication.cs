@@ -21,7 +21,7 @@ namespace ClientApplication
             clientApplication.client.newMessage += new_message;//subscribe to client newMessage event
             clientApplication.client.serverDown += server_down;//subscribe to serverdown event
             clientApplication.client.clientListEvent += client_list_update;//subscribe to client list change event
-            
+
             try
             {
                 //Read the port number from app.config file
@@ -33,7 +33,7 @@ namespace ClientApplication
                 while (getInputFromUser)
                 {
                     Message m1 = clientApplication.GetInputFromUser();
-                    if (m1.Broadcast && getInputFromUser)
+                    if (getInputFromUser)
                     {
                         clientApplication.client.SendToServerStream(m1);
                     }
@@ -66,6 +66,7 @@ namespace ClientApplication
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Server Down.");
+            getInputFromUser = false;
             Console.ResetColor();
         }
 
@@ -86,17 +87,21 @@ namespace ClientApplication
             bool broadcast = inputString.ToLower() == "yes" || inputString.ToLower() == "y";
 
             string[] clients = client.listOfOtherClients.Split('_');
+            List<string> validReceivers = clients.ToList();
+            validReceivers.Remove(client.Id);
 
             if (!broadcast)
             {
                 string receiver = "";
-                do
+                while (!validReceivers.Contains(receiver) && getInputFromUser)
                 {
                     Console.WriteLine("Input Receiver ID");
-                    Console.WriteLine("Valid receiver vals are {0}", client.listOfOtherClients.Replace("_",", "));
+                    Console.WriteLine("Valid receiver vals are {0}", string.Join(", ", validReceivers));
                     receiver = Console.ReadLine();
-                    clients = client.listOfOtherClients.Split('_');
-                } while (!Array.Exists(clients, x => x == receiver));
+                    validReceivers = client.listOfOtherClients.Split('_').ToList();
+                    validReceivers.Remove(client.Id);
+                } 
+                
                 return client.StringsToMessageObject(receiver, message, false);
 
             }
@@ -105,10 +110,6 @@ namespace ClientApplication
                 return client.StringsToMessageObject(null, message, true);
             }
         }
-
-        
-
-        
 
     }
 }

@@ -18,7 +18,7 @@ namespace ClientLib
     public class Client
     {
 
-        public  event OnMessageRecived newMessage;
+        public event OnMessageRecived newMessage;
         public event OnServerDown serverDown;
         public event OnUpdateClientList clientListEvent;
 
@@ -39,8 +39,6 @@ namespace ClientLib
 
             serverStream = clientSocket.GetStream();
             Message m1 = ReceiveFromServerStream();
-            Message m2 = ReceiveFromServerStream();
-            listOfOtherClients = m2.MessageBody;
 
             Id = m1.MessageBody;
 
@@ -49,13 +47,11 @@ namespace ClientLib
         }
         private void ReceiverThreadFunction(NetworkStream stream)
         {
-            while (true)
+            while (serverStream.CanRead)
             {
-
                 Message dataFromServer = ReceiveFromServerStream();
                 if(dataFromServer == null)
                 {
-
                     break;
                 }
                 else
@@ -122,33 +118,6 @@ namespace ClientLib
             }
         }
 
-        //public bool Broadcast(Message message)
-        //{
-        //    try
-        //    {
-        //        SendToServerStream(message);
-        //        return true;//success
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return false;//failure
-        //    }
-        //}
-
-        //public bool Unicast(Message message)
-        //{
-        //    try
-        //    {
-        //        SendToServerStream(message);
-        //        return true;//success
-        //    }
-        //    catch
-        //    {
-        //        return false;//failure
-        //    }
-
-        //}
-
         //https://stackoverflow.com/questions/7099875/sending-messages-and-files-over-networkstream
         private Message ReceiveFromServerStream()
         {
@@ -178,21 +147,26 @@ namespace ClientLib
 
         public void SendToServerStream(Message dataFromClient)
         {
-            byte[] message = ObjectToByteArray(dataFromClient);
-            //Get the length of message in terms of number of bytes
-            int messageLength = message.Length;
+            try
+            {
+                byte[] message = ObjectToByteArray(dataFromClient);
+                //Get the length of message in terms of number of bytes
+                int messageLength = message.Length;
 
-            //lengthBytes are first 4 bytes in stream that contain
-            //message length as integer
-            byte[] lengthBytes = BitConverter.GetBytes(messageLength);
-            serverStream.Write(lengthBytes, 0, lengthBytes.Length);
+                //lengthBytes are first 4 bytes in stream that contain
+                //message length as integer
+                byte[] lengthBytes = BitConverter.GetBytes(messageLength);
+                serverStream.Write(lengthBytes, 0, lengthBytes.Length);
 
-            //Write the message to the server stream
-            byte[] outStream = message;
-            serverStream.Write(outStream, 0, outStream.Length);
-            serverStream.Flush();
+                //Write the message to the server stream
+                byte[] outStream = message;
+                serverStream.Write(outStream, 0, outStream.Length);
+                serverStream.Flush();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
-
-
     }
 }

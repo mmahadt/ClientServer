@@ -25,16 +25,6 @@ namespace ServerApp
             };
             SendOverNetworkStream(m1, clientSocket.GetStream());
 
-            string clientListString = string.Join("_", Program.ClList);
-
-            Message m2 = new Message()
-            {
-                Broadcast = false,
-                SenderClientID = null,
-                ReceiverClientID = Convert.ToString(clineNo),
-                MessageBody = clientListString
-            };
-            SendOverNetworkStream(m2, clientSocket.GetStream());
             Program.ClList.Add(clNo);
             Thread ctThread = new Thread(DoChat);
             ctThread.Start();
