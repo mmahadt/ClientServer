@@ -8,10 +8,16 @@ using ClientLib;
 namespace ServerApp
 {
     //Class to handle each client request separatly
-    public class HandleClinet
+    public class HandleClient
     {
         public TcpClient clientSocket;
         public string clNo;
+
+        ~HandleClient()
+        {
+            clientSocket.Close();
+        }
+
         public void StartClient(TcpClient inClientSocket, string clineNo)
         {
             this.clientSocket = inClientSocket;
@@ -32,64 +38,46 @@ namespace ServerApp
 
         private void DoChat()
         {
-            int requestCount = 0;
-            
             Message dataFromClient = null;
-            
 
-            while ((true))
+            try
             {
-                try
+                NetworkStream networkStream = clientSocket.GetStream();
+                while (clientSocket.Connected)
                 {
-                    requestCount += 1;
-                    NetworkStream networkStream = clientSocket.GetStream();
-                    while (clientSocket.Connected)
+                    if (networkStream.CanRead)
                     {
-                        if (networkStream.CanRead)
+                        dataFromClient = ReadFromNetworkStream(networkStream);
+
+                        if (dataFromClient.Broadcast)
                         {
-                            dataFromClient = ReadFromNetworkStream(networkStream);
-                            
-                            try
-                            {
-                                if (dataFromClient.Broadcast)
-                                {
-                                    Server.Broadcast(dataFromClient, dataFromClient.SenderClientID);
-                                }
-                                else
-                                {
-                                    Server.Unicast(dataFromClient, dataFromClient.ReceiverClientID);
-                                }
-                            }
-                            catch (Exception)
-                            {
-
-                                continue;
-                            }
-
+                            Server.Broadcast(dataFromClient, dataFromClient.SenderClientID);
                         }
                         else
                         {
-                            networkStream.Close();
-                            return;
+                            Server.Unicast(dataFromClient, dataFromClient.ReceiverClientID);
                         }
+
                     }
-                }
-                catch (InvalidOperationException)
-                {
-                    Console.WriteLine("Client {0} disconnected.", clNo);
-                    break;
-                }
-                catch (System.IO.IOException)
-                {
-                    Server.ClList.Remove(clNo);
-                    Console.WriteLine("Client {0} disconnected.", clNo);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(" >> " + ex.ToString());
+
                 }
             }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine("Client {0} disconnected.", clNo);
+
+            }
+            catch (System.IO.IOException)
+            {
+                Server.ClList.Remove(clNo);
+                Console.WriteLine("Client {0} disconnected.", clNo);
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(" >> " + ex.ToString());
+            }
+
         }
 
         // Convert an object to a byte array
@@ -145,7 +133,7 @@ namespace ServerApp
             byte[] inStream = new byte[msgLength1];
             //read that number of bytes from the server stream
             networkStream.Read(inStream, 0, msgLength1);
-           
+
             //convert the byte array to message object
             Message dataFromServer = (Message)ByteArrayToObject(inStream);
             return dataFromServer;

@@ -15,12 +15,12 @@ namespace ServerApp
     public class Server
 
     {
-        public static List<HandleClinet> listOfClients = new List<HandleClinet>();
+        public static List<HandleClient> listOfClients = new List<HandleClient>();
                
         // Create a new dictionary of Sockets, with clientIdStrings as keys
         // and it will help to send messages to the appropriate clients
-        public static Dictionary<string, HandleClinet> clientMapping =
-            new Dictionary<string, HandleClinet>();
+        public static Dictionary<string, HandleClient> clientMapping =
+            new Dictionary<string, HandleClient>();
         
         public static ObservableCollection<string> ClList { get; set; }
 
@@ -47,18 +47,18 @@ namespace ServerApp
 
         public static void Unicast(Message msg, string receiverId)
         {
-            HandleClinet client = clientMapping[receiverId];
-            HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
+            HandleClient client = clientMapping[receiverId];
+            HandleClient.SendOverNetworkStream(msg, client.clientSocket.GetStream());
         }
 
         public static void Broadcast(Message msg, string senderId)
         {
-            foreach (HandleClinet client in listOfClients)
+            foreach (HandleClient client in listOfClients)
             {
                 if (client.clNo != senderId && ClList.Contains(client.clNo)) 
                     //send the message to all clients except the sender
                 {
-                    HandleClinet.SendOverNetworkStream(msg, client.clientSocket.GetStream());
+                    HandleClient.SendOverNetworkStream(msg, client.clientSocket.GetStream());
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace ServerApp
                         clientSocket = serverSocket.AcceptTcpClient();
                         Console.WriteLine(" >> " + "Client No:" + Convert.ToString(counter) + " connected");
 
-                        HandleClinet client = new HandleClinet();
+                        HandleClient client = new HandleClient();
                         //Make a list of clients
                         listOfClients.Add(client);
                         clientMapping.Add(Convert.ToString(counter), client);
