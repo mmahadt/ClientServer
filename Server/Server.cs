@@ -47,19 +47,35 @@ namespace ServerApp
 
         public static void Unicast(Message msg, string receiverId)
         {
-            HandleClient client = clientMapping[receiverId];
-            client.SendOverNetworkStream(msg);
+            try
+            {
+                HandleClient client = clientMapping[receiverId];
+                client.SendOverNetworkStream(msg);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public static void Broadcast(Message msg, string senderId)
         {
-            foreach (HandleClient client in listOfClients)
+            try
             {
-                if (client.clNo != senderId && ClList.Contains(client.clNo)) 
-                    //send the message to all clients except the sender
+                foreach (HandleClient client in listOfClients)
                 {
-                    client.SendOverNetworkStream(msg);
+                    if (client.clNo != senderId && ClList.Contains(client.clNo))
+                    //send the message to all clients except the sender
+                    {
+                        client.SendOverNetworkStream(msg);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 

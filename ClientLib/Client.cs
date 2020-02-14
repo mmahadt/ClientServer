@@ -66,32 +66,7 @@ namespace ClientLib
 
             }
         }
-        public Message StringsToMessageObject(string receiver, string message, bool broadcast)
-        {
-            if (!broadcast)
-            {
-                Message m1 = new Message()
-                {
-                    Broadcast = false,
-                    SenderClientID = Id,
-                    ReceiverClientID = receiver,
-                    MessageBody = message
-                };
-                return m1;
-            }
-            else
-            {
-                Message m1 = new Message()
-                {
-                    Broadcast = true,
-                    SenderClientID = Id,
-                    ReceiverClientID = receiver,
-                    MessageBody = message
-                };
-                return m1;
-            }
-        }
-
+        
         // Convert an object to a byte array
         private byte[] ObjectToByteArray(Object obj)
         {

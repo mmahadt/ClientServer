@@ -77,6 +77,33 @@ namespace ClientApplication
             Console.ResetColor();
         }
 
+        public Message StringsToMessageObject(string receiver, string message, bool broadcast)
+        {
+            if (!broadcast)
+            {
+                Message m1 = new Message()
+                {
+                    Broadcast = false,
+                    SenderClientID = client.Id,
+                    ReceiverClientID = receiver,
+                    MessageBody = message
+                };
+                return m1;
+            }
+            else
+            {
+                Message m1 = new Message()
+                {
+                    Broadcast = true,
+                    SenderClientID = client.Id,
+                    ReceiverClientID = receiver,
+                    MessageBody = message
+                };
+                return m1;
+            }
+        }
+
+
         public Message GetInputFromUser()
         {
             Console.WriteLine("\n\n\nType Messsage");
@@ -100,14 +127,18 @@ namespace ClientApplication
                     receiver = Console.ReadLine();
                     validReceivers = client.listOfOtherClients.Split('_').ToList();
                     validReceivers.Remove(client.Id);
+                    if (string.Join(", ", validReceivers)=="")
+                    {
+                        break;//break out of this loop if no valid receivers 
+                    }
                 } 
                 
-                return client.StringsToMessageObject(receiver, message, false);
+                return StringsToMessageObject(receiver, message, false);
 
             }
             else
             {
-                return client.StringsToMessageObject(null, message, true);
+                return StringsToMessageObject(null, message, true);
             }
         }
 

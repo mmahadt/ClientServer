@@ -48,7 +48,7 @@ namespace ServerApp
                 {
                     if (networkStream.CanRead)
                     {
-                        dataFromClient = ReadFromNetworkStream( );
+                        dataFromClient = ReadFromNetworkStream();
 
                         if (dataFromClient.Broadcast)
                         {
@@ -63,10 +63,14 @@ namespace ServerApp
 
                 }
             }
-            catch (InvalidOperationException)
-            {
-                Console.WriteLine("Client {0} disconnected.", clNo);
+            //catch (InvalidOperationException)
+            //{
+            //    Console.WriteLine("", clNo);
 
+            //}
+            catch (System.Collections.Generic.KeyNotFoundException)
+            {
+                Console.WriteLine("No valid receivers at this moment.");
             }
             catch (System.IO.IOException)
             {
