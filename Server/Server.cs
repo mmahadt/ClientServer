@@ -48,7 +48,7 @@ namespace ServerApp
         public static void Unicast(Message msg, string receiverId)
         {
             HandleClient client = clientMapping[receiverId];
-            HandleClient.SendOverNetworkStream(msg, client.clientSocket.GetStream());
+            client.SendOverNetworkStream(msg);
         }
 
         public static void Broadcast(Message msg, string senderId)
@@ -58,7 +58,7 @@ namespace ServerApp
                 if (client.clNo != senderId && ClList.Contains(client.clNo)) 
                     //send the message to all clients except the sender
                 {
-                    HandleClient.SendOverNetworkStream(msg, client.clientSocket.GetStream());
+                    client.SendOverNetworkStream(msg);
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace ServerApp
                         client.StartClient(clientSocket, Convert.ToString(counter));
 
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         //Console.WriteLine(" >> " + ex.ToString());
                         break;

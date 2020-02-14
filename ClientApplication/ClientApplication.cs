@@ -18,9 +18,9 @@ namespace ClientApplication
             ClientApplication clientApplication = new ClientApplication();
             getInputFromUser = true;
 
-            clientApplication.client.newMessage += new_message;//subscribe to client newMessage event
-            clientApplication.client.serverDown += server_down;//subscribe to serverdown event
-            clientApplication.client.clientListEvent += client_list_update;//subscribe to client list change event
+            clientApplication.client.newMessage += New_message;//subscribe to client newMessage event
+            clientApplication.client.serverDown += Server_down;//subscribe to serverdown event
+            clientApplication.client.clientListEvent += Client_list_update;//subscribe to client list change event
 
             try
             {
@@ -55,14 +55,14 @@ namespace ClientApplication
             }
         }
 
-        private static void new_message(string senderId, string message)
+        private static void New_message(string senderId, string message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Sender Id\t" + senderId + "\tMessage\t\t" + message);
             Console.ResetColor();
         }
 
-        private static void server_down()
+        private static void Server_down()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Server Down.");
@@ -70,7 +70,7 @@ namespace ClientApplication
             Console.ResetColor();
         }
 
-        private static void client_list_update(string updatedListOfClients)
+        private static void Client_list_update(string updatedListOfClients)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\n>>>Updated list of clients {0}", updatedListOfClients.Replace("_", ", "));

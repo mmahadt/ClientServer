@@ -28,8 +28,6 @@ namespace ClientLib
         NetworkStream serverStream;
         public string listOfOtherClients;
 
-        
-
         public void Initialize(int port)
         {
 
@@ -95,7 +93,7 @@ namespace ClientLib
         }
 
         // Convert an object to a byte array
-        public static byte[] ObjectToByteArray(Object obj)
+        private byte[] ObjectToByteArray(Object obj)
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -106,7 +104,7 @@ namespace ClientLib
         }
 
         // Convert a byte array to an Object
-        public static Object ByteArrayToObject(byte[] arrBytes)
+        private Object ByteArrayToObject(byte[] arrBytes)
         {
             using (var memStream = new MemoryStream())
             {
@@ -167,6 +165,11 @@ namespace ClientLib
             {
                 throw;
             }
+        }
+
+        ~Client()
+        {
+            clientSocket.Close();
         }
     }
 }

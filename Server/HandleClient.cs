@@ -11,6 +11,7 @@ namespace ServerApp
     public class HandleClient
     {
         public TcpClient clientSocket;
+        NetworkStream networkStream;
         public string clNo;
 
         ~HandleClient()
@@ -21,6 +22,7 @@ namespace ServerApp
         public void StartClient(TcpClient inClientSocket, string clineNo)
         {
             this.clientSocket = inClientSocket;
+            networkStream = clientSocket.GetStream();
             this.clNo = clineNo;
             Message m1 = new Message()
             {
@@ -29,7 +31,7 @@ namespace ServerApp
                 ReceiverClientID = Convert.ToString(clineNo),
                 MessageBody = Convert.ToString(clineNo)
             };
-            SendOverNetworkStream(m1, clientSocket.GetStream());
+            SendOverNetworkStream(m1);
 
             Server.ClList.Add(clNo);
             Thread ctThread = new Thread(DoChat);
@@ -42,12 +44,11 @@ namespace ServerApp
 
             try
             {
-                NetworkStream networkStream = clientSocket.GetStream();
                 while (clientSocket.Connected)
                 {
                     if (networkStream.CanRead)
                     {
-                        dataFromClient = ReadFromNetworkStream(networkStream);
+                        dataFromClient = ReadFromNetworkStream( );
 
                         if (dataFromClient.Broadcast)
                         {
@@ -81,7 +82,7 @@ namespace ServerApp
         }
 
         // Convert an object to a byte array
-        public static byte[] ObjectToByteArray(Object obj)
+        public byte[] ObjectToByteArray(Object obj)
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -92,7 +93,7 @@ namespace ServerApp
         }
 
         // Convert a byte array to an Object
-        public static Object ByteArrayToObject(byte[] arrBytes)
+        public Object ByteArrayToObject(byte[] arrBytes)
         {
             using (var memStream = new MemoryStream())
             {
@@ -104,7 +105,7 @@ namespace ServerApp
             }
         }
 
-        public static void SendOverNetworkStream(Message dataFromClient, NetworkStream networkStream)
+        public void SendOverNetworkStream(Message dataFromClient)
         {
             byte[] message = ObjectToByteArray(dataFromClient);
             //Get the length of message in terms of number of bytes
@@ -121,7 +122,7 @@ namespace ServerApp
             networkStream.Flush();
         }
 
-        public static Message ReadFromNetworkStream(NetworkStream networkStream)
+        public Message ReadFromNetworkStream()
         {
             //Read the length of incoming message from the server stream
             byte[] msgLengthBytes1 = new byte[sizeof(int)];
