@@ -72,10 +72,11 @@ namespace ServerApp
             {
                 Console.WriteLine("No valid receivers at this moment.");
             }
-            catch (System.IO.IOException)
+            catch (System.IO.IOException ex)
             {
                 Server.ClList.Remove(clNo);
                 Console.WriteLine("Client {0} disconnected.", clNo);
+                Console.WriteLine("{0}",ex.ToString());
                 return;
             }
             catch (Exception ex)
@@ -111,19 +112,27 @@ namespace ServerApp
 
         public void SendOverNetworkStream(Message dataFromClient)
         {
-            byte[] message = ObjectToByteArray(dataFromClient);
-            //Get the length of message in terms of number of bytes
-            int messageLength = message.Length;
+            try
+            {
+                byte[] message = ObjectToByteArray(dataFromClient);
+                //Get the length of message in terms of number of bytes
+                int messageLength = message.Length;
 
-            //lengthBytes are first 4 bytes in stream that contain
-            //message length as integer
-            byte[] lengthBytes = BitConverter.GetBytes(messageLength);
-            networkStream.Write(lengthBytes, 0, lengthBytes.Length);
+                //lengthBytes are first 4 bytes in stream that contain
+                //message length as integer
+                byte[] lengthBytes = BitConverter.GetBytes(messageLength);
+                networkStream.Write(lengthBytes, 0, lengthBytes.Length);
 
-            //Write the message to the server stream
-            byte[] outStream = message;
-            networkStream.Write(outStream, 0, outStream.Length);
-            networkStream.Flush();
+                //Write the message to the server stream
+                byte[] outStream = message;
+                networkStream.Write(outStream, 0, outStream.Length);
+                networkStream.Flush();
+            }
+            catch (IOException)
+            {
+                Console.WriteLine("Client you are sending message to is closed.");
+                //throw;
+            }
         }
 
         public Message ReadFromNetworkStream()

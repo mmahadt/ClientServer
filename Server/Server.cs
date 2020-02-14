@@ -49,8 +49,15 @@ namespace ServerApp
         {
             try
             {
-                HandleClient client = clientMapping[receiverId];
-                client.SendOverNetworkStream(msg);
+                if (clientMapping.ContainsKey(receiverId))
+                {
+                    HandleClient client = clientMapping[receiverId];
+                    client.SendOverNetworkStream(msg);
+                }
+                else
+                {
+                    Console.WriteLine("Wait for new clients to connect to start chatting.");
+                }
             }
             catch (Exception)
             {

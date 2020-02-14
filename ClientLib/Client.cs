@@ -45,7 +45,7 @@ namespace ClientLib
         }
         private void ReceiverThreadFunction(NetworkStream stream)
         {
-            while (serverStream.CanRead)
+            while (clientSocket.Connected)
             {
                 Message dataFromServer = ReceiveFromServerStream();
                 if(dataFromServer == null)
