@@ -63,11 +63,6 @@ namespace ServerApp
 
                 }
             }
-            //catch (InvalidOperationException)
-            //{
-            //    Console.WriteLine("", clNo);
-
-            //}
             catch (System.Collections.Generic.KeyNotFoundException)
             {
                 Console.WriteLine("No valid receivers at this moment.");
@@ -76,7 +71,7 @@ namespace ServerApp
             {
                 Server.ClList.Remove(clNo);
                 Console.WriteLine("Client {0} disconnected.", clNo);
-                Console.WriteLine("{0}",ex.ToString());
+                //Console.WriteLine("{0}",ex.ToString());
                 return;
             }
             catch (Exception ex)
@@ -131,26 +126,42 @@ namespace ServerApp
             catch (IOException)
             {
                 Console.WriteLine("Client you are sending message to is closed.");
+                Message infoMessage = new Message()
+                {
+                    Broadcast = false,
+                    SenderClientID = "ServerInfo",
+                    ReceiverClientID = null,
+                    MessageBody = "Client you are sending message to is closed."
+                };
+                Server.clientMapping[dataFromClient.SenderClientID].SendOverNetworkStream(infoMessage);
                 //throw;
             }
         }
 
         public Message ReadFromNetworkStream()
         {
-            //Read the length of incoming message from the server stream
-            byte[] msgLengthBytes1 = new byte[sizeof(int)];
-            networkStream.Read(msgLengthBytes1, 0, msgLengthBytes1.Length);
-            //store the length of message as an integer
-            int msgLength1 = BitConverter.ToInt32(msgLengthBytes1, 0);
+            try
+            {
+                //Read the length of incoming message from the server stream
+                byte[] msgLengthBytes1 = new byte[sizeof(int)];
+                networkStream.Read(msgLengthBytes1, 0, msgLengthBytes1.Length);
+                //store the length of message as an integer
+                int msgLength1 = BitConverter.ToInt32(msgLengthBytes1, 0);
 
-            //create a buffer for incoming data of size equal to length of message
-            byte[] inStream = new byte[msgLength1];
-            //read that number of bytes from the server stream
-            networkStream.Read(inStream, 0, msgLength1);
+                //create a buffer for incoming data of size equal to length of message
+                byte[] inStream = new byte[msgLength1];
+                //read that number of bytes from the server stream
+                networkStream.Read(inStream, 0, msgLength1);
 
-            //convert the byte array to message object
-            Message dataFromServer = (Message)ByteArrayToObject(inStream);
-            return dataFromServer;
+                //convert the byte array to message object
+                Message dataFromServer = (Message)ByteArrayToObject(inStream);
+                return dataFromServer;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
     }

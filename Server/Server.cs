@@ -56,7 +56,15 @@ namespace ServerApp
                 }
                 else
                 {
-                    Console.WriteLine("Wait for new clients to connect to start chatting.");
+                    Message infoMessage = new Message()
+                    {
+                        Broadcast = false,
+                        SenderClientID = "ServerInfo",
+                        ReceiverClientID = null,
+                        MessageBody = "Wait for new clients to connect, to start chatting."
+                    };
+                    Console.WriteLine("Wait for new clients to connect, to start chatting.");
+                    clientMapping[msg.SenderClientID].SendOverNetworkStream(infoMessage);
                 }
             }
             catch (Exception)
@@ -78,6 +86,7 @@ namespace ServerApp
                         client.SendOverNetworkStream(msg);
                     }
                 }
+
             }
             catch (Exception)
             {
@@ -124,7 +133,6 @@ namespace ServerApp
                     }
                     catch (Exception ex)
                     {
-                        //Console.WriteLine(" >> " + ex.ToString());
                         break;
                     }
                 }

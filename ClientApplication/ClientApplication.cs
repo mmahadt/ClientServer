@@ -122,15 +122,16 @@ namespace ClientApplication
                 string receiver = "";
                 while (!validReceivers.Contains(receiver) && getInputFromUser)
                 {
+                    if (string.Join(", ", validReceivers) == "")
+                    {
+                        Console.WriteLine("No valid receivers.");
+                        break;//break out of this loop if no valid receivers 
+                    }
                     Console.WriteLine("Input Receiver ID");
                     Console.WriteLine("Valid receiver vals are {0}", string.Join(", ", validReceivers));
                     receiver = Console.ReadLine();
                     validReceivers = client.listOfOtherClients.Split('_').ToList();
                     validReceivers.Remove(client.Id);
-                    if (string.Join(", ", validReceivers)=="")
-                    {
-                        break;//break out of this loop if no valid receivers 
-                    }
                 } 
                 
                 return StringsToMessageObject(receiver, message, false);
