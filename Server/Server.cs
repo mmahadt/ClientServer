@@ -16,82 +16,48 @@ namespace ServerApp
 
     {
         public static List<HandleClient> listOfClients = new List<HandleClient>();
-               
+
         // Create a new dictionary of Sockets, with clientIdStrings as keys
         // and it will help to send messages to the appropriate clients
         public static Dictionary<string, HandleClient> clientMapping =
             new Dictionary<string, HandleClient>();
+
+        public static ObservableCollection<string> ClList
+        {
+            get; set;
+        }
+
         
-        public static ObservableCollection<string> ClList { get; set; }
-
-        public void Clear()
+        static void Main(string[] args)
         {
-            ClList.Clear();
-        }
-
-        private static void OnListChanged(object sender, NotifyCollectionChangedEventArgs args)
-        {
-            // react to list changed
-            string clientListString = string.Join("_", Server.ClList);
-
-            Message m2 = new Message()
+            if ((!Environment.UserInteractive))
             {
-                Broadcast = false,
-                SenderClientID = "Server",
-                ReceiverClientID = null,
-                MessageBody = clientListString
-            };
-            Broadcast(m2, m2.SenderClientID);
-        }
-
-
-        public static void Unicast(Message msg, string receiverId)
-        {
-            try
+                Server.RunAsAService();
+            }
+            else
             {
-                if (clientMapping.ContainsKey(receiverId))
+                if (args != null && args.Length > 0)
                 {
-                    HandleClient client = clientMapping[receiverId];
-                    client.SendOverNetworkStream(msg);
+                    if (args[0].Equals("-i", StringComparison.OrdinalIgnoreCase))
+                    {
+                        SelfInstaller.InstallMe();
+                    }
+                    else
+                    {
+                        if (args[0].Equals("-u", StringComparison.OrdinalIgnoreCase))
+                        {
+                            SelfInstaller.UninstallMe();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid argument!");
+                        }
+                    }
                 }
                 else
                 {
-                    Message infoMessage = new Message()
-                    {
-                        Broadcast = false,
-                        SenderClientID = "ServerInfo",
-                        ReceiverClientID = null,
-                        MessageBody = "Wait for new clients to connect, to start chatting."
-                    };
-                    Console.WriteLine("Wait for new clients to connect, to start chatting.");
-                    clientMapping[msg.SenderClientID].SendOverNetworkStream(infoMessage);
+                    Server.RunAsAConsole();
                 }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public static void Broadcast(Message msg, string senderId)
-        {
-            try
-            {
-                foreach (HandleClient client in listOfClients)
-                {
-                    if (client.clNo != senderId && ClList.Contains(client.clNo))
-                    //send the message to all clients except the sender
-                    {
-                        client.SendOverNetworkStream(msg);
-                    }
-                }
-
-            }
-            catch (Exception)
-            {
-
-                throw;
             }
         }
 
@@ -152,39 +118,76 @@ namespace ServerApp
                 Console.Read();
             }
         }
-
-        static void Main(string[] args)
+        private static void OnListChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            if ((!Environment.UserInteractive))
+            // react to list changed
+            string clientListString = string.Join("_", Server.ClList);
+
+            Message m2 = new Message()
             {
-                Server.RunAsAService();
-            }
-            else
+                Broadcast = false,
+                SenderClientID = "Server",
+                ReceiverClientID = null,
+                MessageBody = clientListString
+            };
+            Broadcast(m2, m2.SenderClientID);
+        }
+        public static void Unicast(Message msg, string receiverId)
+        {
+            try
             {
-                if (args != null && args.Length > 0)
+                if (clientMapping.ContainsKey(receiverId))
                 {
-                    if (args[0].Equals("-i", StringComparison.OrdinalIgnoreCase))
-                    {
-                        SelfInstaller.InstallMe();
-                    }
-                    else
-                    {
-                        if (args[0].Equals("-u", StringComparison.OrdinalIgnoreCase))
-                        {
-                            SelfInstaller.UninstallMe();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid argument!");
-                        }
-                    }
+                    HandleClient client = clientMapping[receiverId];
+                    client.SendOverNetworkStream(msg);
                 }
                 else
                 {
-                    Server.RunAsAConsole();
+                    Message infoMessage = new Message()
+                    {
+                        Broadcast = false,
+                        SenderClientID = "ServerInfo",
+                        ReceiverClientID = null,
+                        MessageBody = "Wait for new clients to connect, to start chatting."
+                    };
+
+                    clientMapping[msg.SenderClientID].SendOverNetworkStream(infoMessage);
                 }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
+
+        public static void Broadcast(Message msg, string senderId)
+        {
+            try
+            {
+                foreach (HandleClient client in listOfClients)
+                {
+                    if (client.clNo != senderId && ClList.Contains(client.clNo))
+                    //send the message to all clients except the sender
+                    {
+                        client.SendOverNetworkStream(msg);
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        public void Clear()
+        {
+            ClList.Clear();
+        }
+
 
         static void RunAsAConsole()
         {

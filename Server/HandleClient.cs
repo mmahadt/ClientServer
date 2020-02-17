@@ -63,6 +63,7 @@ namespace ServerApp
 
                 }
             }
+
             catch (System.Collections.Generic.KeyNotFoundException)
             {
                 Console.WriteLine("No valid receivers at this moment.");
@@ -71,7 +72,7 @@ namespace ServerApp
             {
                 Server.ClList.Remove(clNo);
                 Console.WriteLine("Client {0} disconnected.", clNo);
-                //Console.WriteLine("{0}",ex.ToString());
+
                 return;
             }
             catch (Exception ex)
@@ -125,7 +126,6 @@ namespace ServerApp
             }
             catch (IOException)
             {
-                Console.WriteLine("Client you are sending message to is closed.");
                 Message infoMessage = new Message()
                 {
                     Broadcast = false,
@@ -134,7 +134,6 @@ namespace ServerApp
                     MessageBody = "Client you are sending message to is closed."
                 };
                 Server.clientMapping[dataFromClient.SenderClientID].SendOverNetworkStream(infoMessage);
-                //throw;
             }
         }
 

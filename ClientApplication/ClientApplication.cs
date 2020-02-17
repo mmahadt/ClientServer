@@ -16,29 +16,34 @@ namespace ClientApplication
         {
 
             ClientApplication clientApplication = new ClientApplication();
+            clientApplication.Run();
+        }
+
+        private void Run()
+        {
             getInputFromUser = true;
 
-            clientApplication.client.newMessage += New_message;//subscribe to client newMessage event
-            clientApplication.client.serverDown += Server_down;//subscribe to serverdown event
-            clientApplication.client.clientListEvent += Client_list_update;//subscribe to client list change event
+            client.newMessage += New_message;//subscribe to client newMessage event
+            client.serverDown += Server_down;//subscribe to serverdown event
+            client.clientListEvent += Client_list_update;//subscribe to client list change event
 
             try
             {
                 //Read the port number from app.config file
                 int port = int.Parse(ConfigurationManager.AppSettings["connectionManager:port"]);
-                clientApplication.client.Initialize(port);
+                client.Initialize(port);
 
-                Console.WriteLine("Client application Id " + clientApplication.client.Id);
+                Console.WriteLine("Client application Id " + client.Id);
 
                 while (getInputFromUser)
                 {
-                    Message m1 = clientApplication.GetInputFromUser();
+                    Message m1 = GetInputFromUser();
                     if (getInputFromUser)
                     {
-                        clientApplication.client.SendToServerStream(m1);
+                        client.SendToServerStream(m1);
                     }
-                    
-                }              
+
+                }
             }
             catch (System.FormatException)
             {
@@ -139,6 +144,10 @@ namespace ClientApplication
             }
             else
             {
+                if (string.Join(", ", validReceivers) == "")
+                {
+                    Console.WriteLine("No valid receivers.");
+                }
                 return StringsToMessageObject(null, message, true);
             }
         }

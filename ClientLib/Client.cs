@@ -45,25 +45,47 @@ namespace ClientLib
         }
         private void ReceiverThreadFunction(NetworkStream stream)
         {
-            while (clientSocket.Connected)
+            try
             {
-                Message dataFromServer = ReceiveFromServerStream();
-                if(dataFromServer == null)
+                while (clientSocket.Connected)
                 {
-                    break;
-                }
-                else
-                if (dataFromServer.SenderClientID == "Server")
-                {
-                    listOfOtherClients = dataFromServer.MessageBody;
-                    clientListEvent.Invoke(listOfOtherClients);
+                    Message dataFromServer = ReceiveFromServerStream();
+                    if (dataFromServer == null)
+                    {
+                        break;
+                    }
+                    else
+                    if (dataFromServer.SenderClientID == "Server")
+                    {
+                        listOfOtherClients = dataFromServer.MessageBody;
+                        clientListEvent.Invoke(listOfOtherClients);
+
+                    }
+                    else
+                    {
+                        newMessage.Invoke(dataFromServer.SenderClientID, dataFromServer.MessageBody);
+                    }
 
                 }
-                else
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"C:\Users\mahad_tariq\source\repos\ClientServerFirstApplication\ClientApplication\Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
                 {
-                    newMessage.Invoke(dataFromServer.SenderClientID, dataFromServer.MessageBody);
-                }
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Date : " + DateTime.Now.ToString());
+                    writer.WriteLine();
 
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
             }
         }
         
