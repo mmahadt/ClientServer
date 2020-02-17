@@ -129,7 +129,7 @@ namespace ClientApplication
                 {
                     if (string.Join(", ", validReceivers) == "")
                     {
-                        Console.WriteLine("No valid receivers.");
+                        Console.WriteLine("No valid receivers. Wait for new clients to connect.");
                         break;//break out of this loop if no valid receivers 
                     }
                     Console.WriteLine("Input Receiver ID");
@@ -146,7 +146,7 @@ namespace ClientApplication
             {
                 if (string.Join(", ", validReceivers) == "")
                 {
-                    Console.WriteLine("No valid receivers.");
+                    Console.WriteLine("No valid receivers. Wait for new clients to connect.");
                 }
                 return StringsToMessageObject(null, message, true);
             }
