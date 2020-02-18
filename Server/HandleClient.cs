@@ -83,7 +83,7 @@ namespace ServerApp
         }
 
         // Convert an object to a byte array
-        public byte[] ObjectToByteArray(Object obj)
+        private byte[] ObjectToByteArray(Object obj)
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -94,7 +94,7 @@ namespace ServerApp
         }
 
         // Convert a byte array to an Object
-        public Object ByteArrayToObject(byte[] arrBytes)
+        private Object ByteArrayToObject(byte[] arrBytes)
         {
             using (var memStream = new MemoryStream())
             {
