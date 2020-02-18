@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
-
+using System.Timers;
 
 namespace ClientLib
 {
@@ -28,9 +28,9 @@ namespace ClientLib
         NetworkStream serverStream;
         public string listOfOtherClients;
 
+
         public void Initialize(int port)
         {
-
             clientSocket = new TcpClient();
 
             clientSocket.Connect(IPAddress.Loopback, port);
@@ -42,7 +42,8 @@ namespace ClientLib
 
             Thread receiverThread = new Thread(() => ReceiverThreadFunction(serverStream));
             receiverThread.Start();
-        }
+        }     
+
         private void ReceiverThreadFunction(NetworkStream stream)
         {
             try

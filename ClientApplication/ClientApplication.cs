@@ -60,14 +60,14 @@ namespace ClientApplication
             }
         }
 
-        private static void New_message(string senderId, string message)
+        private void New_message(string senderId, string message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Sender Id\t" + senderId + "\tMessage\t\t" + message);
             Console.ResetColor();
         }
 
-        private static void Server_down()
+        private void Server_down()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Server Down.");
@@ -75,7 +75,7 @@ namespace ClientApplication
             Console.ResetColor();
         }
 
-        private static void Client_list_update(string updatedListOfClients)
+        private void Client_list_update(string updatedListOfClients)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\n>>>Updated list of clients {0}", updatedListOfClients.Replace("_", ", "));
